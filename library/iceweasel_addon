@@ -1,7 +1,7 @@
 #!/bin/bash
 
 script() {
-  [[ ${0##*/} = firefox_addon ]]
+  [[ ${0##*/} = iceweasel_addon ]]
 }
 
 fail() {
@@ -19,7 +19,7 @@ ensure_profile() {
   local _result_name=$1
   local _display=$2
   local _stdout
-  _stdout=$(firefox ${_display:+--display $_display} -no-remote -CreateProfile default 2>&1)
+  _stdout=$(iceweasel ${_display:+--display $_display} -no-remote -CreateProfile default 2>&1)
   [[ $? -eq 0 ]] || fail "couldn't determine profile path" "$_stdout"
   [[ $_stdout =~ Success:\ created\ profile\ \'(.+)\'\ at\ \'(.+)\' ]] || fail "couldn't determine profile path"
   local _profile_path=${BASH_REMATCH[2]}
@@ -28,7 +28,7 @@ ensure_profile() {
 
 url_slug() {
   local _url=$1
-  { [[ $_url =~ https://addons.mozilla.org/.+/firefox/addon/([^/]+) ]] && printf '%s' ${BASH_REMATCH[1]}; } || return 1
+  { [[ $_url =~ https://addons.mozilla.org/.+/iceweasel/addon/([^/]+) ]] && printf '%s' ${BASH_REMATCH[1]}; } || return 1
 }
 
 details() {
@@ -37,7 +37,7 @@ details() {
   local _slug
   _slug=$(url_slug $_url) || fail "couldn't determine addon id from url: $_url"
   local _stdout
-  _stdout=$(curl -s -f -L https://services.addons.mozilla.org/firefox/api/1.5/addon/$_slug)
+  _stdout=$(curl -s -f -L https://services.addons.mozilla.org/iceweasel/api/1.5/addon/$_slug)
   [[ $? -eq 0 ]] || fail "couldn't get details of addon: $_slug" "$_stdout"
   result "$_result_name" "$_stdout"
 }
@@ -152,7 +152,7 @@ main() {
   [[ -z $state || $state = "present" || $state = "absent" ]] || fail "value of state must be one of: present,absent, got: $state"
 
   # http://stackoverflow.com/questions/592620/check-if-a-program-exists-from-a-bash-script
-  hash firefox 2>/dev/null || fail "required command not found: firefox"
+  hash iceweasel 2>/dev/null || fail "required command not found: iceweasel"
   hash curl 2>/dev/null || fail "required command not found: curl"
   hash unzip 2>/dev/null || fail "required command not found: unzip"
   hash xmllint 2>/dev/null || fail "required command not found: xmllint"

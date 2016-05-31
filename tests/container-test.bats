@@ -4,8 +4,8 @@
 
 # https://github.com/tutumcloud/tutum-fedora
 readonly docker_image="tutum/fedora:21"
-readonly docker_container_name="ansible-firefox-addon"
-readonly addon_url=https://addons.mozilla.org/en-US/firefox/addon/adblock-plus
+readonly docker_container_name="ansible-iceweasel-addon"
+readonly addon_url=https://addons.mozilla.org/en-US/iceweasel/addon/adblock-plus
 
 docker_exec() {
   docker exec $docker_container_name $@ > /dev/null
@@ -36,61 +36,61 @@ setup() {
 }
 
 @test "Module exec with url arg missing" {
-  run ansible_exec_module firefox_addon
+  run ansible_exec_module iceweasel_addon
   [[ $output =~ "missing required arguments: url" ]]
 }
 
 @test "Module exec with state arg having invalid value" {
-  run ansible_exec_module firefox_addon "url=$addon_url state=latest"
+  run ansible_exec_module iceweasel_addon "url=$addon_url state=latest"
   [[ $output =~ "value of state must be one of: present,absent, got: latest" ]]
 }
 
 @test "Module exec with state arg having default value of present" {
-  docker_exec yum -y install firefox unzip curl
-  run ansible_exec_module firefox_addon "url=$addon_url display=:1"
+  docker_exec yum -y install iceweasel unzip curl
+  run ansible_exec_module iceweasel_addon "url=$addon_url display=:1"
   [[ $output =~ changed.*true ]]
-  docker_exec_sh test -d "~/.mozilla/firefox/*.default/extensions/{d10d0bf8-f5b5-c8b4-a8b2-2b9879e08c5d}"
+  docker_exec_sh test -d "~/.mozilla/iceweasel/*.default/extensions/{d10d0bf8-f5b5-c8b4-a8b2-2b9879e08c5d}"
 }
 
 @test "Module exec with state present" {
-  docker_exec yum -y install firefox unzip curl
-  run ansible_exec_module firefox_addon "url=$addon_url state=present display=:1"
+  docker_exec yum -y install iceweasel unzip curl
+  run ansible_exec_module iceweasel_addon "url=$addon_url state=present display=:1"
   [[ $output =~ changed.*true ]]
 }
 
 @test "Module exec with state absent" {
-  docker_exec yum -y install firefox unzip curl
-  run ansible_exec_module firefox_addon "url=$addon_url state=absent display=:1"
+  docker_exec yum -y install iceweasel unzip curl
+  run ansible_exec_module iceweasel_addon "url=$addon_url state=absent display=:1"
   [[ $output =~ changed.*false ]]
 }
 
 @test "Module exec with state absent and addon already installed" {
-  docker_exec yum -y install firefox unzip curl
-  run ansible_exec_module firefox_addon "url=$addon_url state=present display=:1"
+  docker_exec yum -y install iceweasel unzip curl
+  run ansible_exec_module iceweasel_addon "url=$addon_url state=present display=:1"
   [[ $output =~ changed.*true ]]
-  run ansible_exec_module firefox_addon "url=$addon_url state=absent display=:1"
+  run ansible_exec_module iceweasel_addon "url=$addon_url state=absent display=:1"
   [[ $output =~ changed.*true ]]
-  docker_exec_sh test ! -e "~/.mozilla/firefox/*.default/extensions/{d10d0bf8-f5b5-c8b4-a8b2-2b9879e08c5d}"
+  docker_exec_sh test ! -e "~/.mozilla/iceweasel/*.default/extensions/{d10d0bf8-f5b5-c8b4-a8b2-2b9879e08c5d}"
 }
 
 @test "Module exec with state present twice and check idempotent" {
-  docker_exec yum -y install firefox unzip curl
-  run ansible_exec_module firefox_addon "url=$addon_url display=:1"
-  run ansible_exec_module firefox_addon "url=$addon_url display=:1"
+  docker_exec yum -y install iceweasel unzip curl
+  run ansible_exec_module iceweasel_addon "url=$addon_url display=:1"
+  run ansible_exec_module iceweasel_addon "url=$addon_url display=:1"
   [[ $output =~ changed.*false ]]
 }
 
 @test "Module exec with complete theme addon and check selected skin pref" {
-  local _addon_url=https://addons.mozilla.org/en-US/firefox/addon/fxchrome
-  docker_exec yum -y install firefox unzip curl
-  run ansible_exec_module firefox_addon "url=$_addon_url display=:1"
+  local _addon_url=https://addons.mozilla.org/en-US/iceweasel/addon/fxchrome
+  docker_exec yum -y install iceweasel unzip curl
+  run ansible_exec_module iceweasel_addon "url=$_addon_url display=:1"
   [[ $output =~ changed.*true ]]
-  docker_exec_sh grep FXChrome "~/.mozilla/firefox/*.default/user.js"
+  docker_exec_sh grep FXChrome "~/.mozilla/iceweasel/*.default/user.js"
 }
 
 @test "Module exec with display arg missing when there is no DISPLAY environment" {
-  docker_exec yum -y install firefox unzip curl
-  run ansible_exec_module firefox_addon "url=$addon_url"
+  docker_exec yum -y install iceweasel unzip curl
+  run ansible_exec_module iceweasel_addon "url=$addon_url"
   [[ $output =~ 'Error: no display specified' ]]
 }
 

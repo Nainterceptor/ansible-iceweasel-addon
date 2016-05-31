@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   author: Alex Coyle
-  description: Provides a 'firefox_addon' Ansible module for installing or uninstalling Firefox addons
+  description: Provides a 'iceweasel_addon' Ansible module for installing or uninstalling Iceweasel addons
   license: BSD
   min_ansible_version: 1.9
   platforms:
